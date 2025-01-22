@@ -1,5 +1,4 @@
-# US Household Data Exploration
-
+# US Household Data
 
 SELECT *
 FROM household_income.ushouseholdincome;

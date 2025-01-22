@@ -1,0 +1,188 @@
+# Project Data cleaning worldlifeexpectancy
+
+
+
+SELECT * FROM worldlifexpectancy;
+
+
+SELECT Country, Year, CONCAT(Country, Year), COunt(CONCAT(Country, Year))
+FROM worldlifexpectancy
+Group by Country, Year, CONCAT(Country, Year)
+Having COunt(CONCAT(Country, Year)) > 1;
+
+Select *
+From ( 
+ Select Row_ID,
+ CONCAT(Country, Year),
+ ROW_NUMBER() OVER(Partition by CONCAT(Country, Year) Order by CONCAT(Country, Year)) AS Row_Num
+ From worldlifexpectancy) AS Row_Table
+ Where Row_Num > 1;
+
+Delete From worldlifexpectancy
+Where Row_ID IN ( 
+Select Row_ID
+From ( 
+ Select Row_ID,
+ CONCAT(Country, Year),
+ ROW_NUMBER() OVER(Partition by CONCAT(Country, Year) Order by CONCAT(Country, Year)) AS Row_Num
+ From worldlifexpectancy) AS Row_Table
+ Where Row_Num > 1);
+
+
+
+SELECT * 
+FROM worldlifexpectancy
+Where Status = '';
+
+Update worldlifexpectancy t1
+Join worldlifexpectancy t2
+On t1.Country = t2.Country
+Set t1.Status = 'Developing'
+Where t1.Status = ''
+And t2.Status <> ''
+AND t2.Status = 'Developing';
+
+
+
+
+Update worldlifexpectancy t1
+Join worldlifexpectancy t2
+On t1.Country = t2.Country
+Set t1.Status = 'Developed'
+Where t1.Status = ''
+And t2.Status <> ''
+AND t2.Status = 'Developed';
+
+SELECT * 
+FROM worldlifexpectancy
+Where Status = '';
+
+SELECT * 
+FROM worldlifexpectancy
+Where Status iS NULL;
+
+SELECT * 
+FROM worldlifexpectancy;
+
+SELECT * 
+FROM worldlifexpectancy
+Where `Lifeexpectancy` = '';
+
+
+Select Country, Year `Lifeexpectancy`
+from worldlifexpectancy;
+
+
+Select t1.Country, t1.Year, t1.`Lifeexpectancy`, 
+t2.Country, t2.Year, t2.`Lifeexpectancy`,
+t3.Country, t3.Year, t3.`Lifeexpectancy`,
+Round((t2.`Lifeexpectancy` + t3.`Lifeexpectancy`)/2,1)
+ From worldlifexpectancy t1
+   Join worldlifexpectancy t2
+   ON t1.Country = t2.Country
+   And t1.Year = t2.Year - 1
+       Join worldlifexpectancy t3
+	   ON t1.Country = t3.Country
+       And t1.Year = t3.Year + 1
+       Where t1.Lifeexpectancy = '';
+
+
+Update worldlifexpectancy t1
+   Join worldlifexpectancy t2
+   ON t1.Country = t2.Country
+   And t1.Year = t2.Year - 1
+       Join worldlifexpectancy t3
+	   ON t1.Country = t3.Country
+       And t1.Year = t3.Year + 1
+Set t1.`Lifeexpectancy` = Round((t2.`Lifeexpectancy` + t3.`Lifeexpectancy`)/2,1)
+Where t1.`Lifeexpectancy` = ''
+;
+
+
+SELECT * 
+FROM worldlifexpectancy;
+#Where `Lifeexpectancy` = ''
+
+# World Life Expectancy Part 2 Data Analysis
+
+SELECT * 
+FROM worldlifexpectancy;
+
+SELECT Country, 
+MIN(`Lifeexpectancy`), 
+MAX(`Lifeexpectancy`),
+Round(MAX(`Lifeexpectancy`) - MIN(`Lifeexpectancy`),1) AS Life_Increase_15_Years
+FROM worldlifexpectancy
+Group By Country
+Having MIN(`Lifeexpectancy`) <> 0
+And MAX(`Lifeexpectancy`) <> 0
+Order By Life_Increase_15_Years DESC;
+
+SELECT * 
+FROM worldlifexpectancy;
+
+SELECT Year, Round(AVG(`Lifeexpectancy`),2)
+FROM worldlifexpectancy
+Where `Lifeexpectancy` <> 0
+And `Lifeexpectancy` <> 0
+Group by Year
+Order By Year;
+
+SELECT Country, Round(AVG(`Lifeexpectancy`),1) As Life_Exp, Round(AVG(GDP)) AS GDP
+FROM worldlifexpectancy
+Group by Country
+Having Life_exp > 0
+And GDP > 0
+Order By GDP DESC;
+
+
+SELECT *
+FROM worldlifexpectancy
+Order by GDP DESC;
+
+SELECT
+SUM(Case
+WHen GDP >= 1500 THEN 1 Else 0
+End) High_GDP_Count
+FROM worldlifexpectancy;
+
+SELECT
+SUM(Case When GDP >= 1500 THEN 1 Else 0 End) High_GDP_Count,
+Avg(Case When GDP >= 1500 THEN `Lifeexpectancy` Else null End) High_GDP_Life_Expentancy,
+SUM(Case When GDP <= 1500 THEN 1 Else 0 End) Low_GDP_Count,
+Avg(Case When GDP <= 1500 THEN `Lifeexpectancy` Else null End) Low_GDP_Life_Expentancy
+FROM worldlifexpectancy;
+
+SELECT * 
+FROM worldlifexpectancy;
+
+SELECT Status, ROUND(AVG(`Lifeexpectancy`),1)
+FROM worldlifexpectancy
+Group by Status;
+
+SELECT Status, Count(Distinct Country), ROUND(AVG(`Lifeexpectancy`),1)
+FROM worldlifexpectancy
+Group by Status;
+
+
+
+
+SELECT Country, Round(AVG(`Lifeexpectancy`),1) AS Life_Exp, Round(AVG(BMI),1) AS BMI
+From worldlifexpectancy
+Group by Country
+Having Life_Exp > 0
+AND BMI > 0
+Order by BMI ASC;
+
+
+SELECT Country, Year, `Lifeexpectancy`, `AdultMortality`,
+SUM(`AdultMortality`) Over(Partition by Country Order by year) AS Rolling_total
+FROM worldlifexpectancy
+Where Country LIKE '%America%';
+
+#End
+
+
+
+
+

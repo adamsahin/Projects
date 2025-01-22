@@ -1,0 +1,187 @@
+# US Household Income
+
+SELECT *
+FROM USHouseholdIncome;
+
+
+SELECT *
+FROM US_Project.ushouseholdincome_statistics;
+
+
+Select id, Count(id)
+From US_Project.USHouseholdIncome
+Group By id
+Having Count(id) > 1;
+
+Select *
+From(
+Select row_id, id,
+Row_Number() Over(Partition by id order by id) row_num
+From US_Project.USHouseholdIncome
+) duplicates
+Where row_num > 1;
+
+
+Delete From USHouseholdIncome
+Where row_id IN (
+    Select row_id
+    From(
+       Select row_id, id,
+	   Row_Number() Over(Partition by id order by id) row_num
+       From US_Project.USHouseholdIncome
+	   ) duplicates
+	Where row_num > 1);
+
+
+Select id, Count(id)
+From US_Project.ushouseholdincome_statistics
+Group By id
+Having Count(id) > 1;
+
+Select *
+From(
+Select row_id, id,
+Row_Number() Over(Partition by id order by id) row_num
+From US_Project.USHouseholdIncome
+) duplicates
+Where row_num > 1;
+
+# No duplicates left
+
+SELECT Distinct State_Name
+FROM USHouseholdIncome
+Order By 1;
+
+
+
+
+Update USHouseholdIncome
+Set State_name = 'Georgia'
+Where State_Name = 'georia';
+
+
+
+Update USHouseholdIncome
+Set State_name = 'Alabama'
+Where State_Name = 'alabama';
+
+
+SELECT *
+FROM US_Project.USHouseholdIncome
+Where Place = Null
+Order by 1;
+
+SELECT *
+FROM USHouseholdIncome;
+
+
+Update US_Project.USHouseholdIncome
+Set Place = 'Autaugaville'
+Where County = 'Autauga County'
+And City = 'Vinemoint';
+
+Select Type, COunt(Type)
+From US_Project.USHouseholdIncome
+Group By Type;
+#Order by 1;
+
+Update US_Project.USHouseholdIncome
+Set Type = 'Borough'
+Where Type = 'Boroughs';
+
+
+Select ALand, AWater
+From US_Project.USHouseholdIncome
+Where ALand = 0 Or ALand = '' Or ALand IS NULL;
+
+# this is the end of the data cleaning
+
+# Data Analysis
+
+SELECT *
+FROM USHouseholdIncome;
+
+
+SELECT *
+FROM US_Project.ushouseholdincome_statistics;
+
+Select State_Name, SUM(ALand), SUM(AWater)
+From USHouseholdIncome
+Group by State_Name
+Order by 3 DESC
+Limit 10;
+
+
+SELECT *
+FROM USHouseholdIncome u
+Inner Join US_Project.ushouseholdincome_statistics us
+On u.id = us.id
+Where Mean <> 0;
+
+SELECT u.State_Name, County, Type, `Primary`, Mean, Median
+FROM USHouseholdIncome u
+Inner Join US_Project.ushouseholdincome_statistics us
+On u.id = us.id
+Where Mean <> 0;
+
+
+SELECT u.State_Name, ROUND(AVG(Mean),1), Round(AVG(Median),1)
+FROM USHouseholdIncome u
+Inner Join US_Project.ushouseholdincome_statistics us
+On u.id = us.id
+Where Mean <> 0
+Group by u.State_Name
+Order by 3 DESC
+Limit 10;
+
+
+SELECT Type, COUNT(Type), ROUND(AVG(Mean),1), Round(AVG(Median),1)
+FROM USHouseholdIncome u
+Inner Join US_Project.ushouseholdincome_statistics us
+On u.id = us.id
+Where Mean <> 0
+Group by 1
+Order by 4 DESC
+Limit 20;
+
+Select *
+From USHouseholdIncome
+Where Type = 'Community';
+
+
+SELECT *
+FROM USHouseholdIncome;
+
+
+SELECT *
+FROM US_Project.ushouseholdincome_statistics;
+
+SELECT Type, COUNT(Type), ROUND(AVG(Mean),1), Round(AVG(Median),1)
+FROM USHouseholdIncome u
+Inner Join US_Project.ushouseholdincome_statistics us
+On u.id = us.id
+Where Mean <> 0
+Group by 1
+Having COUNT(Type) > 100
+Order by 4 DESC
+Limit 20;
+
+SELECT u.State_Name, City, ROUND(AVG(Mean),1)
+FROM USHouseholdIncome u
+Join US_Project.ushouseholdincome_statistics us
+On u.id = us.id
+Group by u.State_Name,City
+Order by 1 DESC;
+
+Select u.State_Name, City, ROUND(AVG(Mean),1), Round(AVG(Median),1)
+From USHouseholdIncome u
+Join US_Project.ushouseholdincome_statistics us
+On u.id = us.id
+Where u.State_Name LIKE '%New Jersey%'
+Group by u.State_Name,City
+Order by 4 DESC;
+
+
+#End
+
+
